@@ -14,14 +14,40 @@ This repository contains:
 
 ## Runtime contract
 
-The primary interface is a single container image:
+The repository exposes a single interactive container runtime and supports both a published instant-demo image and local rebuilds.
+
+### Instant demo via published image
+
+Published image reference:
+
+```text
+docker.io/klee100/linux-0.01-oneclick:latest
+```
+
+The published image has been validated with the repository PTY-based verifier against the Docker Hub reference above.
+
+Docker:
+
+```bash
+docker run --rm -it docker.io/klee100/linux-0.01-oneclick:latest
+```
+
+Podman:
+
+```bash
+podman run --rm -it docker.io/klee100/linux-0.01-oneclick:latest
+```
+
+### Local build
+
+Docker:
 
 ```bash
 docker build -t linux-0.01 .
 docker run --rm -it linux-0.01
 ```
 
-The same image contract also works with Podman:
+Podman:
 
 ```bash
 podman build -t linux-0.01 .
@@ -88,12 +114,22 @@ python3 -m pip install -r requirements-dev.txt
 
 Verification commands:
 
+Local image via Docker:
+
 ```bash
 python3 scripts/verify_container.py --runtime docker --image linux-0.01:latest
 ```
 
+Local image via Podman:
+
 ```bash
 python3 scripts/verify_container.py --runtime podman --image linux-0.01:latest
+```
+
+Published image via Podman:
+
+```bash
+python3 scripts/verify_container.py --runtime podman --image docker.io/klee100/linux-0.01-oneclick:latest
 ```
 
 Generated proof artifacts include:
