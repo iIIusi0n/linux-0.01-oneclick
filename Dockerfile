@@ -1,8 +1,9 @@
 ARG UBUNTU_VERSION=18.04
+ARG BUILDER_PLATFORM=linux/amd64
 ARG LINUX001_REPO=https://github.com/mariuz/linux-0.01.git
 ARG LINUX001_REF=b0d17028228c83d68cc68646c25bd664a1ece50f
 
-FROM ubuntu:${UBUNTU_VERSION} AS builder
+FROM --platform=${BUILDER_PLATFORM} ubuntu:${UBUNTU_VERSION} AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LINUX001_REPO
 ARG LINUX001_REF
@@ -37,8 +38,12 @@ RUN make clean \
     && git rev-parse HEAD > /opt/linux-0.01/source-commit.txt \
     && printf '%s\n' "${LINUX001_REPO}" > /opt/linux-0.01/source-repo.txt
 
-FROM ubuntu:${UBUNTU_VERSION} AS runtime
+FROM --platform=$BUILDPLATFORM ubuntu:${UBUNTU_VERSION} AS runtime
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Keep the Linux 0.01 build on amd64, but let the runtime QEMU userspace match
+# the local builder host so Apple Silicon does not have to execute QEMU through
+# Rosetta when the image was produced with `buildx --platform linux/amd64`.
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

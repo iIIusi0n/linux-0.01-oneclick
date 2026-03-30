@@ -28,6 +28,18 @@ podman build -t linux-0.01 .
 podman run --rm -it linux-0.01
 ```
 
+For an amd64 `buildx` build on Apple Silicon, use:
+
+```bash
+docker buildx build --platform linux/amd64 --load -t linux-0.01 .
+docker run --rm -it --platform linux/amd64 linux-0.01
+```
+
+The build stage stays pinned to amd64 so the historical toolchain remains
+stable, while the runtime stage follows the local build platform so
+`qemu-system-i386` runs natively instead of failing under Rosetta with
+unsupported syscall errors.
+
 ## Build pipeline
 
 The build stage performs the following steps:
